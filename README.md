@@ -84,9 +84,16 @@ Clone the repository:
 
 ```bash
 git clone <REPOSITORY_URL>
-cd meld-efr-cli
+cd Emotion-And-Emotion-Flip-Reasoning
 ```
 
+
+
+Pull the trained model:
+```
+git lfs install
+git lfs pull
+```
 Optionally create a virtual environment:
 
 ```bash

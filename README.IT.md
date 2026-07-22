@@ -56,7 +56,13 @@ Clonare il repository:
 
 ```bash
 git clone <REPOSITORY_URL>
-cd meld-efr-cli
+cd Emotion-And-Emotion-Flip-Reasoning
+```
+
+Prendi il modello trainato da GitHub:
+```
+git lfs install
+git lfs pull
 ```
 
 Opzionalmente creare un ambiente virtuale:
