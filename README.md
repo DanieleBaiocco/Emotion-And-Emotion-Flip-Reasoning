@@ -1,43 +1,324 @@
+# MELD Emotion & Emotion-Flip Reasoning CLI
 
-# MELD EFR CLI
+A command-line project for **emotion recognition** and **emotion-flip trigger detection** in multi-speaker conversations.
 
-Progetto da terminale per training e inference su MELD Emotion Flip Reasoning.
+Given a dialogue made of utterances and speaker IDs, the model predicts for each turn:
 
-L'architettura corregge i problemi principali del notebook originale: learning rate separati per encoder/head, encoding BERT per utterance, contesto BiGRU, class weighting, loss trigger con logits, early stopping con vero best checkpoint e metriche anti-collasso.
+- the **emotion** expressed in the utterance;
+- the probability that the utterance acts as an **emotion-flip trigger**;
+- a binary `trigger` decision obtained using the threshold selected during validation.
 
-## Struttura
+The project is designed so that training and inference use the same Python package and the same CLI. A trained repository can therefore be cloned and used directly from a terminal without opening a notebook.
+
+---
+
+## What the model does
+
+Input:
+
+```json
+{
+  "utterances": [
+    "I finally got the promotion!",
+    "That is amazing, congratulations!"
+  ],
+  "speakers": [
+    "A",
+    "B"
+  ]
+}
+```
+
+For every utterance, the model returns:
+
+- `emotion`: predicted emotion class;
+- `trigger_probability`: estimated probability of being an emotion-flip trigger;
+- `trigger`: binary prediction (`0` or `1`);
+- the original utterance, speaker and index for convenience.
+
+The model uses a Transformer encoder for utterance representations and a contextual sequence model to reason across the dialogue.
+
+---
+
+## Project structure
 
 ```text
 meld-efr-cli/
-├── src/meld_efr/          # package Python
-│   ├── cli.py             # comandi train / predict
-│   ├── data.py            # dataset + collator
-│   ├── model.py           # BERT + speaker embedding + BiGRU
-│   ├── training.py        # training, validation, checkpoint, metriche
-│   └── inference.py       # caricamento checkpoint + prediction
-├── colab/
-│   └── train_from_drive.ipynb
-├── data/                  # opzionale: dataset nel repo/Drive
-├── artifacts/             # best_model.pt, metriche, history
-├── examples/dialogue.json
+├── artifacts/                 # Trained model and inference assets
+│   ├── best_model.pt
+│   ├── tokenizer/
+│   ├── encoder_config/
+│   └── ...
+├── data/                      # Training / validation / test datasets
+├── examples/                  # Example input dialogues
+├── src/
+│   └── meld_efr/
+│       ├── cli.py
+│       ├── data.py
+│       ├── inference.py
+│       ├── model.py
+│       ├── training.py
+│       └── utils.py
+├── pyproject.toml
 ├── requirements.txt
-└── pyproject.toml
+└── README.md
 ```
 
-## Installazione locale dopo `git clone`
+---
+
+## Requirements
+
+- Python **3.10+**
+- PyTorch
+- Transformers
+- scikit-learn
+- NumPy
+
+A CUDA-compatible NVIDIA GPU is recommended for training, but inference can also run on CPU.
+
+---
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone <REPOSITORY_URL>
+cd meld-efr-cli
+```
+
+Optionally create a virtual environment:
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
-python -m pip install --upgrade pip
+```
+
+Activate it on Linux/macOS:
+
+```bash
+source .venv/bin/activate
+```
+
+On Windows:
+
+```powershell
+.venv\Scripts\activate
+```
+
+Install the project:
+
+```bash
 pip install -e .
 ```
 
-Per il **training** serve poter caricare il modello base Hugging Face (default `bert-base-uncased`). Dopo il training, la cartella `artifacts/` contiene anche tokenizer e config dell'encoder: la **prediction non deve riscaricare i pesi base**, perché i pesi completi sono nel checkpoint.
+The `-e` option installs the project in **editable mode**, so changes made under `src/` are immediately reflected without reinstalling the package.
 
-## Training da terminale
+After installation, the CLI is available as:
 
-Con split train/validation/test già disponibili:
+```bash
+meld-efr --help
+```
+
+The equivalent module syntax is:
+
+```bash
+python -m meld_efr --help
+```
+
+---
+
+# Inference
+
+Inference requires a trained checkpoint, normally stored at:
+
+```text
+artifacts/best_model.pt
+```
+
+Run prediction with:
+
+```bash
+meld-efr predict \
+  --checkpoint artifacts/best_model.pt \
+  --input examples/dialogue1.json \
+  --output artifacts/dialogue1_predictions.json \
+  --device auto
+```
+
+Equivalent command:
+
+```bash
+python -m meld_efr predict \
+  --checkpoint artifacts/best_model.pt \
+  --input examples/dialogue1.json \
+  --output artifacts/dialogue1_predictions.json \
+  --device auto
+```
+
+## Prediction options
+
+| Option | Required | Description |
+|---|---:|---|
+| `--checkpoint PATH` | Yes | Path to the trained `.pt` checkpoint, usually `artifacts/best_model.pt`. |
+| `--input PATH` | Yes | JSON file containing one dialogue or a list of dialogues. |
+| `--output PATH` | No | File where predictions are saved as JSON. If omitted, predictions are still printed to the terminal. |
+| `--device DEVICE` | No | Inference device. Use `auto`, `cpu`, `cuda`, `cuda:0`, etc. Default: `auto`. |
+
+With:
+
+```bash
+--device auto
+```
+
+the program automatically uses CUDA when a compatible GPU is available; otherwise it falls back to CPU.
+
+---
+
+## Input format
+
+A dialogue must contain:
+
+- `utterances`: ordered list of dialogue turns;
+- `speakers`: speaker ID for each corresponding utterance.
+
+The two arrays must have the same length.
+
+Example:
+
+```json
+{
+  "utterances": [
+    "Hello!",
+    "Hi, how are you?"
+  ],
+  "speakers": [
+    "A",
+    "B"
+  ]
+}
+```
+
+No emotion or trigger labels are required for inference.
+
+---
+
+# Complete inference example
+
+Assume the following file exists:
+
+```text
+examples/dialogue1.json
+```
+
+with this content:
+
+```json
+{
+  "utterances": [
+    "I finally got the promotion!",
+    "That is amazing, congratulations!",
+    "Thanks. I was sure they would choose someone else.",
+    "You earned it. We should celebrate tonight."
+  ],
+  "speakers": [
+    "A",
+    "B",
+    "A",
+    "B"
+  ]
+}
+```
+
+Run:
+
+```bash
+meld-efr predict \
+  --checkpoint artifacts/best_model.pt \
+  --input examples/dialogue1.json \
+  --output artifacts/dialogue1_predictions.json \
+  --device auto
+```
+
+Example output produced by the trained model:
+
+```json
+[
+  {
+    "trigger_threshold": 0.7500000000000002,
+    "predictions": [
+      {
+        "index": 0,
+        "speaker": "A",
+        "utterance": "I finally got the promotion!",
+        "emotion": "joy",
+        "trigger_probability": 0.083826,
+        "trigger": 0
+      },
+      {
+        "index": 1,
+        "speaker": "B",
+        "utterance": "That is amazing, congratulations!",
+        "emotion": "joy",
+        "trigger_probability": 0.155064,
+        "trigger": 0
+      },
+      {
+        "index": 2,
+        "speaker": "A",
+        "utterance": "Thanks. I was sure they would choose someone else.",
+        "emotion": "joy",
+        "trigger_probability": 0.881737,
+        "trigger": 1
+      },
+      {
+        "index": 3,
+        "speaker": "B",
+        "utterance": "You earned it. We should celebrate tonight.",
+        "emotion": "joy",
+        "trigger_probability": 0.900187,
+        "trigger": 1
+      }
+    ]
+  }
+]
+```
+
+### How to read the output
+
+For example:
+
+```json
+{
+  "emotion": "joy",
+  "trigger_probability": 0.881737,
+  "trigger": 1
+}
+```
+
+means that the model:
+
+1. classified the utterance as `joy`;
+2. assigned an emotion-flip trigger probability of approximately `0.882`;
+3. classified it as a trigger because its probability is above the learned threshold (`0.75` in this example).
+
+`trigger_threshold` is selected from validation data during training and stored with the trained model, rather than being arbitrarily fixed at `0.5`.
+
+---
+
+# Training
+
+Training is also available directly from the CLI.
+
+Expected dataset files:
+
+```text
+data/
+├── MELD_train_efr.json
+├── MELD_val_efr.json
+└── MELD_test_efr.json
+```
+
+Example:
 
 ```bash
 meld-efr train \
@@ -45,121 +326,97 @@ meld-efr train \
   --val-path data/MELD_val_efr.json \
   --test-path data/MELD_test_efr.json \
   --output-dir artifacts \
-  --epochs 8 \
+  --epochs 30 \
   --batch-size 4 \
-  --grad-accum-steps 2
+  --grad-accum-steps 2 \
+  --encoder-lr 8e-6 \
+  --head-lr 7e-5 \
+  --dropout 0.5 \
+  --weight-decay 0.05 \
+  --patience 5 \
+  --device auto
 ```
 
-Se passi solo `--train-path`, il programma crea automaticamente split train/val/test.
+During training, the program evaluates the model on the validation set and saves the best checkpoint in the output directory.
 
-Output principali:
+The main validation metrics are:
 
-```text
-artifacts/
-├── best_model.pt
-├── encoder_config/        # config locale per ricostruire BERT senza riscaricare i pesi base
-├── tokenizer/             # tokenizer locale usato in training/inference
-├── history.json
-├── metrics.json
-├── training_config.json
-└── label_mapping.json
+- `emotion_macro_f1`: macro-averaged F1 across emotion classes;
+- `trigger_f1+`: F1 score for the positive emotion-flip trigger class.
+
+After training, the important inference files are kept under `artifacts/`, including the trained checkpoint and the resources required to reconstruct the model.
+
+---
+
+## Training options: most important parameters
+
+| Option | Description |
+|---|---|
+| `--train-path` | Training JSON dataset. |
+| `--val-path` | Validation JSON dataset. |
+| `--test-path` | Test JSON dataset. |
+| `--output-dir` | Directory where checkpoints, metrics and model assets are saved. |
+| `--epochs` | Maximum number of training epochs. |
+| `--patience` | Number of validation rounds without improvement before early stopping. |
+| `--batch-size` | Number of dialogues processed per batch. |
+| `--grad-accum-steps` | Gradient accumulation steps; useful when GPU memory is limited. |
+| `--encoder-lr` | Learning rate of the pretrained Transformer encoder. |
+| `--head-lr` | Learning rate of the task-specific/contextual layers. |
+| `--dropout` | Dropout probability used for regularization. |
+| `--weight-decay` | Weight decay used for regularization. |
+| `--device` | `auto`, `cpu`, `cuda`, `cuda:0`, etc. |
+
+For the full list:
+
+```bash
+meld-efr train --help
 ```
 
-`best_model.pt` contiene i pesi addestrati, configurazione dell'architettura, mapping delle emozioni e soglia trigger ottimizzata sul validation set. Conserva **l'intera cartella `artifacts/`**, perché `encoder_config/` e `tokenizer/` rendono l'inference indipendente dal download del modello base da Hugging Face.
+---
 
-## Prediction da terminale
+# Using the trained repository after `git clone`
 
-Input minimo, per esempio `examples/dialogue.json`:
+Once `artifacts/best_model.pt` and the associated inference assets are committed to the repository, another user can run:
 
-```json
-{
-  "utterances": ["Hello", "I am angry now"],
-  "speakers": ["A", "B"]
-}
+```bash
+git clone <REPOSITORY_URL>
+cd meld-efr-cli
+pip install -e .
 ```
 
-Esecuzione:
+and then immediately execute:
 
 ```bash
 meld-efr predict \
   --checkpoint artifacts/best_model.pt \
-  --input examples/dialogue.json \
-  --output predictions.json
+  --input examples/dialogue1.json \
+  --device auto
 ```
 
-Si può usare anche:
+No notebook is required for inference.
+
+> Large model files such as `.pt`, `.bin` or `.safetensors` should normally be stored with **Git LFS** when pushing the trained repository to GitHub.
+
+---
+
+## Quick start
 
 ```bash
-python -m meld_efr predict \
+# 1. Clone
+
+git clone <REPOSITORY_URL>
+cd meld-efr-cli
+
+# 2. Install
+
+pip install -e .
+
+# 3. Predict
+
+meld-efr predict \
   --checkpoint artifacts/best_model.pt \
-  --input examples/dialogue.json
+  --input examples/dialogue1.json \
+  --output predictions.json \
+  --device auto
 ```
 
-L'input può essere un singolo oggetto JSON oppure una lista di dialoghi.
-
-## Training su Google Colab + Google Drive
-
-Apri `colab/train_from_drive.ipynb` in Colab.
-
-Il notebook:
-
-1. monta Google Drive;
-2. punta alla cartella del progetto presente su Drive;
-3. installa il package direttamente da quella cartella;
-4. lancia `meld-efr train`;
-5. salva `best_model.pt`, metriche e history in `PROJECT_DIR/artifacts/` sul Drive;
-6. esegue una prediction di prova usando esattamente il checkpoint appena salvato.
-
-Nella prima cella di configurazione modifica solo:
-
-```python
-PROJECT_DIR = "/content/drive/MyDrive/meld-efr-cli"
-TRAIN_JSON = f"{PROJECT_DIR}/data/MELD_train_efr.json"
-VAL_JSON   = f"{PROJECT_DIR}/data/MELD_val_efr.json"
-TEST_JSON  = f"{PROJECT_DIR}/data/MELD_test_efr.json"
-```
-
-Dopo il training puoi scaricare/copiarе l'intera cartella del progetto e versionarla.
-
-## Checkpoint grandi e Git
-
-I checkpoint di modelli Transformer possono essere grandi. Il repository include `.gitattributes` già predisposto per Git LFS (`*.pt`, `*.bin`, `*.safetensors`). Prima di aggiungere un checkpoint grande al repository, inizializza Git LFS nel tuo ambiente:
-
-```bash
-git lfs install
-git add .gitattributes artifacts/best_model.pt
-git commit -m "Add trained model checkpoint"
-git push
-```
-
-Chi clona il repository con Git LFS installato riceverà anche il checkpoint tracciato da LFS.
-
-## Parametri utili
-
-Per GPU con poca memoria:
-
-```bash
-meld-efr train ... --batch-size 2 --grad-accum-steps 4 --max-utterance-tokens 48
-```
-
-Per selezionare esplicitamente il device:
-
-```bash
-meld-efr train ... --device cuda
-meld-efr predict ... --device cpu
-```
-
-## Formato training JSON
-
-Ogni dialogo deve avere campi allineati:
-
-```json
-{
-  "utterances": ["...", "..."],
-  "speakers": ["A", "B"],
-  "emotions": ["neutral", "anger"],
-  "triggers": [0, 1]
-}
-```
-
-`triggers` può contenere `null`; viene convertito a `0` come nel preprocessing originale.
