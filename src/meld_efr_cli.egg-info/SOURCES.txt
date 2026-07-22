@@ -1,0 +1,16 @@
+README.md
+pyproject.toml
+src/meld_efr/__init__.py
+src/meld_efr/__main__.py
+src/meld_efr/cli.py
+src/meld_efr/data.py
+src/meld_efr/inference.py
+src/meld_efr/model.py
+src/meld_efr/training.py
+src/meld_efr/utils.py
+src/meld_efr_cli.egg-info/PKG-INFO
+src/meld_efr_cli.egg-info/SOURCES.txt
+src/meld_efr_cli.egg-info/dependency_links.txt
+src/meld_efr_cli.egg-info/entry_points.txt
+src/meld_efr_cli.egg-info/requires.txt
+src/meld_efr_cli.egg-info/top_level.txt

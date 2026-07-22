@@ -1,0 +1,167 @@
+[
+  {
+    "trigger_threshold": 0.7500000000000002,
+    "predictions": [
+      {
+        "index": 0,
+        "speaker": "A",
+        "utterance": "Hey, are you still coming to dinner tonight?",
+        "emotion": "neutral",
+        "trigger_probability": 0.000436,
+        "trigger": 0
+      },
+      {
+        "index": 1,
+        "speaker": "B",
+        "utterance": "I don't think I can make it anymore.",
+        "emotion": "sadness",
+        "trigger_probability": 0.001754,
+        "trigger": 0
+      },
+      {
+        "index": 2,
+        "speaker": "A",
+        "utterance": "What? You told me yesterday that you were definitely coming.",
+        "emotion": "surprise",
+        "trigger_probability": 0.001151,
+        "trigger": 0
+      },
+      {
+        "index": 3,
+        "speaker": "B",
+        "utterance": "I know, I'm sorry. Something came up at work.",
+        "emotion": "sadness",
+        "trigger_probability": 0.001929,
+        "trigger": 0
+      },
+      {
+        "index": 4,
+        "speaker": "A",
+        "utterance": "You always say that at the last minute.",
+        "emotion": "neutral",
+        "trigger_probability": 0.000364,
+        "trigger": 0
+      },
+      {
+        "index": 5,
+        "speaker": "B",
+        "utterance": "That's not fair. I don't always cancel.",
+        "emotion": "sadness",
+        "trigger_probability": 0.002142,
+        "trigger": 0
+      },
+      {
+        "index": 6,
+        "speaker": "A",
+        "utterance": "Maybe not always, but this is the third time this month.",
+        "emotion": "neutral",
+        "trigger_probability": 0.00097,
+        "trigger": 0
+      },
+      {
+        "index": 7,
+        "speaker": "B",
+        "utterance": "I didn't realize it happened that often.",
+        "emotion": "surprise",
+        "trigger_probability": 0.00158,
+        "trigger": 0
+      },
+      {
+        "index": 8,
+        "speaker": "A",
+        "utterance": "Well, it did, and honestly I'm getting tired of planning things around you.",
+        "emotion": "anger",
+        "trigger_probability": 0.006055,
+        "trigger": 0
+      },
+      {
+        "index": 9,
+        "speaker": "B",
+        "utterance": "I really didn't mean to make you feel that way.",
+        "emotion": "sadness",
+        "trigger_probability": 0.001857,
+        "trigger": 0
+      },
+      {
+        "index": 10,
+        "speaker": "A",
+        "utterance": "I invited everyone because I thought we'd finally spend some time together.",
+        "emotion": "joy",
+        "trigger_probability": 0.00433,
+        "trigger": 0
+      },
+      {
+        "index": 11,
+        "speaker": "B",
+        "utterance": "Now I feel terrible.",
+        "emotion": "sadness",
+        "trigger_probability": 0.015925,
+        "trigger": 0
+      },
+      {
+        "index": 12,
+        "speaker": "A",
+        "utterance": "I was angry when you cancelled, but I appreciate you saying that.",
+        "emotion": "sadness",
+        "trigger_probability": 0.062385,
+        "trigger": 0
+      },
+      {
+        "index": 13,
+        "speaker": "B",
+        "utterance": "Can I make it up to you tomorrow?",
+        "emotion": "neutral",
+        "trigger_probability": 0.064454,
+        "trigger": 0
+      },
+      {
+        "index": 14,
+        "speaker": "A",
+        "utterance": "Maybe. What did you have in mind?",
+        "emotion": "neutral",
+        "trigger_probability": 0.019016,
+        "trigger": 0
+      },
+      {
+        "index": 15,
+        "speaker": "B",
+        "utterance": "Lunch, my treat, and I promise I won't cancel.",
+        "emotion": "neutral",
+        "trigger_probability": 0.203995,
+        "trigger": 0
+      },
+      {
+        "index": 16,
+        "speaker": "A",
+        "utterance": "That actually sounds nice.",
+        "emotion": "neutral",
+        "trigger_probability": 0.014342,
+        "trigger": 0
+      },
+      {
+        "index": 17,
+        "speaker": "B",
+        "utterance": "So... are we okay?",
+        "emotion": "neutral",
+        "trigger_probability": 0.096764,
+        "trigger": 0
+      },
+      {
+        "index": 18,
+        "speaker": "A",
+        "utterance": "Yeah, we're okay. I'm still a little annoyed, though.",
+        "emotion": "neutral",
+        "trigger_probability": 0.942326,
+        "trigger": 1
+      },
+      {
+        "index": 19,
+        "speaker": "B",
+        "utterance": "Fair enough. I'll try to do better.",
+        "emotion": "anger",
+        "trigger_probability": 0.680437,
+        "trigger": 0
+      }
+    ]
+  }
+]

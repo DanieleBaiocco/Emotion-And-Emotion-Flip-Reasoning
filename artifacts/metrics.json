@@ -1,0 +1,44 @@
+{
+  "validation_at_0_5": {
+    "emotion_accuracy": 0.588869960249858,
+    "emotion_macro_f1": 0.5096382860567742,
+    "emotion_weighted_f1": 0.5838984451905865,
+    "trigger_accuracy": 0.8302101078932425,
+    "trigger_f1_positive": 0.6023936170212766,
+    "trigger_macro_f1": 0.7472256893770644,
+    "loss": 2.221292002178798
+  },
+  "tuned_trigger_threshold": 0.7500000000000002,
+  "validation_trigger_f1_at_tuned_threshold": 0.67008547008547,
+  "test": {
+    "emotion_accuracy": 0.5707012265679241,
+    "emotion_macro_f1": 0.42862144256950535,
+    "emotion_weighted_f1": 0.570077084981934,
+    "trigger_accuracy": 0.8897246007868549,
+    "trigger_f1_positive": 0.653580516175936,
+    "trigger_macro_f1": 0.7940028088345448,
+    "loss": 2.3093538082453358
+  },
+  "baseline": {
+    "emotion_accuracy": 0.4378616061096968,
+    "emotion_macro_f1": 0.08700650709342163,
+    "emotion_weighted_f1": 0.2666776625654423,
+    "trigger_accuracy": 0.8647303864846101,
+    "trigger_f1_positive": 0.0,
+    "trigger_macro_f1": 0.46372944461681664
+  },
+  "diagnostics": {
+    "majority_emotion": "neutral",
+    "predicted_emotion_distribution": {
+      "anger": 1056,
+      "disgust": 253,
+      "fear": 241,
+      "joy": 1536,
+      "neutral": 3543,
+      "sadness": 570,
+      "surprise": 1443
+    },
+    "emotion_macro_f1_beats_majority": true,
+    "num_predicted_emotion_classes": 7
+  }
+}
