@@ -1,4 +1,4 @@
-# MELD Emotion & Emotion-Flip Reasoning CLI
+# MELD Emotion & Emotion-Flip Reasoning
 
 A command-line project for **emotion recognition** and **emotion-flip trigger detection** in multi-speaker conversations.
 

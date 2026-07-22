@@ -1,4 +1,4 @@
-# MELD Emotion & Emotion-Flip Reasoning CLI
+# MELD Emotion & Emotion-Flip Reasoning
 
 Progetto da riga di comando per il **riconoscimento delle emozioni** e il **rilevamento dei trigger di cambiamento emotivo (Emotion Flip Reasoning)** nelle conversazioni multi-speaker.
 
