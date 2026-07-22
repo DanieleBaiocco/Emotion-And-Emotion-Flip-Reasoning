@@ -1,2 +1,0 @@
-[console_scripts]
-meld-efr = meld_efr.cli:main
